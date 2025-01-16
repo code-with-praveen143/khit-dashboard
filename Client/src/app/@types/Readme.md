@@ -1,0 +1,1 @@
+In a Next.js application (or any TypeScript-based project), the @types directory is commonly used to define TypeScript type definitions for various entities in your application.
