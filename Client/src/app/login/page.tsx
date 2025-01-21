@@ -91,7 +91,7 @@ function LoginPageContent() {
         <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:items-center lg:justify-center lg:p-8 lg:w-1/2">
           <div className="relative h-64 w-full">
             {isClient && (
-              <Image
+              <ClientSideImage
                 src={theme === "dark" ? logo3 : logo}
                 alt="Campusify Logo"
                 layout="fill"
@@ -110,7 +110,7 @@ function LoginPageContent() {
             <CardHeader className="space-y-2 text-center">
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative h-16 w-32">
-                  <Image
+                  <ClientSideImage
                     src={theme === "dark" ? logo3 : logo}
                     alt="Campusify"
                     layout="fill"
@@ -118,9 +118,7 @@ function LoginPageContent() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl dark:text-white">
-                    Welcome back
-                  </h1>
+                  <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl dark:text-white">Welcome back</h1>
                   <p className="text-sm text-muted-foreground sm:text-base dark:text-gray-400">
                     Enter your credentials to sign in to your account
                   </p>
@@ -129,10 +127,7 @@ function LoginPageContent() {
             </CardHeader>
             <CardContent className="space-y-6">
               <Form {...signInForm}>
-                <form
-                  onSubmit={signInForm.handleSubmit(onSignInSubmit)}
-                  className="space-y-4"
-                >
+                <form onSubmit={signInForm.handleSubmit(onSignInSubmit)} className="space-y-4">
                   <FormField
                     control={signInForm.control}
                     name="email"
@@ -188,25 +183,17 @@ function LoginPageContent() {
                               tabIndex={-1}
                             >
                               {showPassword ? (
-                                <Eye
-                                  className={`h-6 w-6 text-${
-                                    theme === "dark" ? "white" : "gray-800"
-                                  }`}
+                                <EyeOff
+                                  className={`h-6 w-6 text-${theme === "dark" ? "white" : "gray-800"}`}
                                   aria-hidden="true"
                                 />
                               ) : (
-                                <EyeOff
-                                  className={`h-6 w-6 text-${
-                                    theme === "dark" ? "white" : "gray-800"
-                                  }`}
+                                <Eye
+                                  className={`h-6 w-6 text-${theme === "dark" ? "white" : "gray-800"}`}
                                   aria-hidden="true"
                                 />
                               )}
-                              <span className="sr-only">
-                                {showPassword
-                                  ? "Hide password"
-                                  : "Show password"}
-                              </span>
+                              <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
                             </Button>
                           </div>
                         </FormControl>
@@ -234,7 +221,7 @@ function LoginPageContent() {
                 >
                   Sign up
                 </Button>
-              </p>{" "}
+              </p>
               <p className="px-2 text-xs text-muted-foreground dark:text-gray-400">
                 By continuing, you agree to our{" "}
                 <Link
@@ -256,7 +243,7 @@ function LoginPageContent() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default function LoginPage() {
