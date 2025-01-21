@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sun, Moon, Menu } from "lucide-react";
 import logo from "../../../utils/logo.png";
-
+import logo3 from "../../../utils/logo3.jpeg"
 const allNavItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { title: "User Management", href: "/dashboard/user-management", icon: UserCog },
@@ -58,6 +58,7 @@ const ThemeToggle = () => {
 };
 
 export function Navbar() {
+  const { theme } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -104,7 +105,7 @@ export function Navbar() {
 
           {/* Logo */}
           <div className="absolute left-1/2 transform -translate-x-1/2 lg:relative lg:left-0 lg:transform-none lg:flex-1">
-            <Image src={logo} alt="Logo" width={150} height={40} className="h-8 w-auto" />
+            <Image src={theme === "dark" ? logo3 : logo}  alt="Logo" width={150} height={40} className="h-8 w-auto" />
           </div>
 
           {/* Right-side icons */}

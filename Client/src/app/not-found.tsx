@@ -3,8 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import logo3 from "../utils/logo3.png";
-
+import logo3 from "../utils/logo3.jpeg"
 const NotFoundPage: React.FC = () => {
   const router = useRouter();
 

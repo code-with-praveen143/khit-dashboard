@@ -40,7 +40,7 @@ const Settings = () => {
             className="p-6 bg-gray-100 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col items-center justify-center"
           >
             <div className="text-4xl mb-4">{option.icon}</div>
-            <h2 className="text-lg font-bold text-center mb-2">{option.title}</h2>
+            <h2 className="text-lg font-bold text-center text-primary mb-2">{option.title}</h2>
             <p className="text-sm text-gray-600 text-center mb-4">
               {option.description}
             </p>

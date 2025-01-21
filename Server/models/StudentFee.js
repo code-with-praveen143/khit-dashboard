@@ -8,7 +8,7 @@ const studentFeeSchema = new mongoose.Schema({
   scholarshipId: { type: String }, // Scholarship ID if applicable
   entryYear: { 
     type: Number, 
-    required: true, 
+    required: false, 
     default: 1, 
     enum: [1, 2], // Only allows 1 or 3
   }, // The year student entered the course (e.g., 1 for regular, 2 for lateral)

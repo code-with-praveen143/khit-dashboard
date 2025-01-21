@@ -156,9 +156,9 @@ const addStudentsFromExcel = async (req, res) => {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const batchSize = 100; // Increased batch size for fewer database interactions
+    const batchSize = 100;
     const createdStudents = [];
-    const skippedRows = [];
+    const rowErrors = [];
 
     // Pre-compute default hashed password
     const defaultPassword = await bcrypt.hash("defaultPassword123", 10);
@@ -174,73 +174,70 @@ const addStudentsFromExcel = async (req, res) => {
       const feeBulkOps = [];
 
       for (const row of batch) {
-        try {
-          if (
-            !row["studentname"] ||
-            !row["email"] ||
-            !emailRegex.test(row["email"])
-          ) {
-            skippedRows.push({
-              row,
-              reason: "Missing required fields or invalid email.",
-            });
-            continue;
-          }
+        const errors = [];
+        const email = row["email"] || "";
 
-          if (existingEmails.has(row["email"])) {
-            skippedRows.push({ row, reason: "Email already exists." });
-            continue;
-          }
-
-          const userId = new mongoose.Types.ObjectId();
-
-          userBulkOps.push({
-            insertOne: {
-              document: {
-                _id: userId,
-                name: row["studentname"],
-                email: row["email"],
-                password: defaultPassword,
-                role: "student",
-              },
-            },
-          });
-
-          feeBulkOps.push({
-            insertOne: {
-              document: {
-                studentId: userId,
-                academicYear: row["ay"] || null,
-                yearSem: row["yearSem"] || null,
-                admissionMode: row["admissionMode"] || null,
-                rollno: row["rollno"] || null,
-                scholarshipId: row["scholarshipId"] || null,
-                entryYear: row["EntryYear"] || null,
-                Department: row["specialization"] || null,
-                category: row["category"] || null,
-                caste: row["caste"] || null,
-                gender: row["gender"] || null,
-                course: row["course"] || null,
-
-                aadharNumber: row["aadharNumber"] || null,
-                phoneNumber: row["phoneNumber"] || null,
-
-                parentNumbers: {
-                  parent1: row["parentNumber1"] || null,
-                  parent2: row["parentNumber2"] || null,
-                },
-                feePaidByGovt: row["fee_govt"] || 0,
-                feePaidByStudent: row["fee_student"] || 0,
-              },
-            },
-          });
-
-          createdStudents.push({ email: row["email"], userId });
-          existingEmails.add(row["email"]); // Avoid duplicate processing
-        } catch (error) {
-          skippedRows.push({ row, reason: error.message });
-          logger.error(`Error processing row: ${error.message}`, { row });
+        // Validate required fields
+        if (!row["studentname"]) {
+          errors.push("Missing student name.");
         }
+        if (!email || !emailRegex.test(email)) {
+          errors.push("Invalid or missing email.");
+        }
+        if (existingEmails.has(email)) {
+          errors.push("Email already exists.");
+        }
+
+        if (errors.length > 0) {
+          rowErrors.push({ row, errors });
+        }
+
+        // Default values for missing data
+        const userId = new mongoose.Types.ObjectId();
+
+        userBulkOps.push({
+          insertOne: {
+            document: {
+              _id: userId,
+              name: row["studentname"] || "Unknown Student",
+              email: email || `unknown${userId}@example.com`,
+              password: defaultPassword,
+              role: "student",
+            },
+          },
+        });
+
+        feeBulkOps.push({
+          insertOne: {
+            document: {
+              studentId: userId,
+              academicYear: row["ay"] || null,
+              yearSem: row["yearSem"] || null,
+              admissionMode: row["admissionMode"] || "Unknown",
+              rollno: row["rollno"] || null,
+              scholarshipId: row["scholarshipId"] || null,
+              entryYear: row["EntryYear"] || null,
+              Department: row["specialization"] || null,
+              category: row["category"] || "Unknown",
+              caste: row["caste"] || "Unknown",
+              gender: row["gender"] || "Unknown",
+              course: row["course"] || "Unknown",
+
+              aadharNumber: row["aadharNumber"] || null,
+              phoneNumber: row["phoneNumber"] || null,
+
+              parentNumbers: {
+                parent1: row["parentNumber1"] || null,
+                parent2: row["parentNumber2"] || null,
+              },
+              feePaidByGovt: row["fee_govt"] || 0,
+              feePaidByStudent: row["fee_student"] || 0,
+            },
+          },
+        });
+
+        createdStudents.push({ email, userId });
+        existingEmails.add(email);
       }
 
       // Perform bulk operations
@@ -274,7 +271,7 @@ const addStudentsFromExcel = async (req, res) => {
     res.status(201).json({
       message: "Processing complete.",
       createdStudents,
-      skippedRows,
+      rowErrors,
     });
   } catch (error) {
     const endTime = performance.now();
@@ -289,6 +286,7 @@ const addStudentsFromExcel = async (req, res) => {
     });
   }
 };
+
 // Get all students with detailed information from User and StudentFee
 const getAllStudentsWithDetails = async (req, res) => {
   try {

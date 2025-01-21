@@ -23,13 +23,13 @@ import {
 } from "@/components/ui/form";
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import logo from "@/utils/logo.png";
-import logo4 from "@/utils/logo4.png";
 import { useLogin } from "../hooks/auth/useAuth";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { useTheme } from "next-themes";
-
+import logo from "@/utils/logo.png";
+import logo3 from "@/utils/logo3.jpeg";
+import Image from "next/image"
 type LoginRequest = {
   email: string;
   password: string;
@@ -91,8 +91,8 @@ function LoginPageContent() {
         <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:items-center lg:justify-center lg:p-8 lg:w-1/2">
           <div className="relative h-64 w-full">
             {isClient && (
-              <ClientSideImage
-                src={logo4}
+              <Image
+                src={theme === "dark" ? logo3 : logo}
                 alt="Campusify Logo"
                 layout="fill"
                 objectFit="contain"
@@ -101,7 +101,7 @@ function LoginPageContent() {
             )}
           </div>
           <h2 className="mt-8 max-w-xl text-center text-3xl font-bold leading-tight text-gray-700 dark:text-gray-200">
-            Kallam Haranadha Reddy Institute of Engineering & Technology
+            Transform Your Campus Operations with Campusify
           </h2>
         </div>
 
@@ -110,8 +110,8 @@ function LoginPageContent() {
             <CardHeader className="space-y-2 text-center">
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative h-16 w-32">
-                  <ClientSideImage
-                    src={logo}
+                  <Image
+                    src={theme === "dark" ? logo3 : logo}
                     alt="Campusify"
                     layout="fill"
                     objectFit="contain"
@@ -230,11 +230,12 @@ function LoginPageContent() {
                 <Button
                   variant="link"
                   className="p-0 text-secondary hover:underline hover:underline-offset-4"
-                  onClick={() => router.push('/signup')}
+                  onClick={() => router.push("/signup")}
                 >
                   Sign up
                 </Button>
-              </p>              <p className="px-2 text-xs text-muted-foreground dark:text-gray-400">
+              </p>{" "}
+              <p className="px-2 text-xs text-muted-foreground dark:text-gray-400">
                 By continuing, you agree to our{" "}
                 <Link
                   href="/terms"
