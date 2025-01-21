@@ -20,7 +20,7 @@ const app = express();
 app.use(express.json());
 app.use(
     cors({
-      origin: "http://localhost:3000", // Adjust based on your frontend
+      origin: ["http://localhost:3000", "https://democampusify.vercel.app"], // Adjust based on your frontend
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
