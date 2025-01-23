@@ -211,13 +211,13 @@ const addStudentsFromExcel = async (req, res) => {
           insertOne: {
             document: {
               studentId: userId,
-              academicYear: row["ay"] || null,
-              yearSem: row["yearSem"] || null,
+              academicYear: row["academicYear"] || null,
+              yearSem: row["year"] || null,
               admissionMode: row["admissionMode"] || "Unknown",
               rollno: row["rollno"] || null,
               scholarshipId: row["scholarshipId"] || null,
-              entryYear: row["EntryYear"] || null,
-              Department: row["specialization"] || null,
+              entryYear: row["entryYear"] || null,
+              Department: row["Department"] || null,
               category: row["category"] || "Unknown",
               caste: row["caste"] || "Unknown",
               gender: row["gender"] || "Unknown",
