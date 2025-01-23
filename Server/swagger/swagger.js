@@ -16,7 +16,11 @@ const options = {
       },
       {
         url: 'https://osaw.in/v1/payment', // Production server URL
-        description: 'Production server',
+        description: 'Production Server1',
+      },
+      {
+        url: 'https://khit-dashboard.onrender.com', // Production server URL
+        description: 'Production Server2',
       },
     ],
     components: {

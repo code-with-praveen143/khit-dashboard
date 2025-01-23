@@ -1,6 +1,6 @@
 import { auth_token } from "@/app/@types/data";
 import { useMutation } from "@tanstack/react-query";
-
+import { BASE_URL } from "@/app/utils/constants";
 export function useUploadStudents() {
     return useMutation({
       mutationFn: async (file: File) => {
@@ -9,7 +9,7 @@ export function useUploadStudents() {
   
         
         const response = await fetch(
-          "http://localhost:5001/api/students/upload-students",
+          `${BASE_URL}/api/students/upload-students`,
           {
             method: "POST",
             body: formData,
