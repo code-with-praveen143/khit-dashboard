@@ -2,36 +2,48 @@
 
 import React, { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { StudentFee } from '@/app/@types/student'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+
+// Mock hook for fetching data
 import { useGetStudentFees } from '@/app/hooks/students/useGetStudents'
-import { Skeleton } from '@/components/ui/skeleton'
+
+interface StudentFee {
+  Department: string
+  rollno: string
+}
+
+// Background colors for departments
+const departmentColors: Record<string, string> = {
+  ECE: 'bg-blue-200',
+  CSE: 'bg-red-200',
+  EEE: 'bg-yellow-200',
+  Bio: 'bg-purple-200',
+  MECH: 'bg-green-200',
+  IT: 'bg-pink-200',
+}
 
 const DepartmentGrid: React.FC = () => {
   const { data, isLoading, isError } = useGetStudentFees()
 
-  // Group students by branch and section
+  // Group and calculate section data
   const groupedData = useMemo(() => {
     if (!data) return {}
 
-    return data.reduce((acc, student) => {
-      const { course, rollno } = student
-      const section = rollno.slice(-1).toUpperCase() // Extract section from roll number (e.g., A, B, C, D)
+    return data.reduce((acc: any, student: StudentFee) => {
+      const year = getYearFromRollNo(student.rollno)
+      const { Department } = student
 
-      if (!acc[course]) {
-        acc[course] = {}
-      }
-      if (!acc[course][section]) {
-        acc[course][section] = []
-      }
-      acc[course][section].push(student)
+      if (!acc[year]) acc[year] = {}
+      if (!acc[year][Department]) acc[year][Department] = []
+
+      acc[year][Department].push(student)
       return acc
-    }, {} as Record<string, Record<string, StudentFee[]>>)
+    }, {})
   }, [data])
 
   if (isLoading) {
@@ -44,21 +56,21 @@ const DepartmentGrid: React.FC = () => {
 
   return (
     <div className="p-4 space-y-8">
-      {Object.entries(groupedData).map(([branch, sections], index) => (
+      {Object.entries(groupedData).map(([year, departments], index) => (
         <motion.div
-          key={branch}
+          key={year}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.1 }}
+          className="space-y-4"
         >
-          <h2 className="text-2xl font-bold mb-4">{branch}</h2>
+          <h2 className="text-xl font-bold border-b pb-2 mb-4">{`Year: ${year}`}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {['A', 'B', 'C', 'D'].map((section) => (
-              <SectionCard
-                key={section}
-                branch={branch}
-                section={section}
-                students={sections[section] || []}
+            {Object.entries(departments as Record<string, StudentFee[]>).map(([department, students]) => (
+              <DepartmentCard
+                key={department}
+                department={department}
+                students={students}
               />
             ))}
           </div>
@@ -68,50 +80,82 @@ const DepartmentGrid: React.FC = () => {
   )
 }
 
-const SectionCard: React.FC<{
-  branch: string
-  section: string
+const DepartmentCard: React.FC<{
+  department: string
   students: StudentFee[]
-}> = ({ branch, section, students }) => {
+}> = ({ department, students }) => {
+  // Calculate section counts
+  const sectionCounts = calculateSectionCounts(students.length)
+
   return (
-    <Card className="overflow-hidden">
+    <Card className={`overflow-hidden ${departmentColors[department] || 'bg-gray-200'}`}>
       <CardHeader>
-        <CardTitle>{`Section ${section}`}</CardTitle>
+        <CardTitle className="flex justify-between items-center">
+          <span>{department}</span>
+          <span className="text-gray-500">{students.length}</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{students.length}</div>
-        <div className="text-sm text-gray-500">Students</div>
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries(sectionCounts).map(([section, count]) => (
+            <div
+              key={section}
+              className="flex flex-col items-center justify-center p-2 border rounded-lg bg-white"
+            >
+              <div className="text-lg font-bold">{section}</div>
+              <div className="text-sm text-gray-600">{count} Students</div>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   )
 }
 
-const LoadingSkeleton: React.FC = () => (
-  <div className="p-4 space-y-8">
-    {[1, 2].map((group) => (
-      <div key={group} className="space-y-4">
-        <Skeleton className="h-8 w-1/4" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((card) => (
-            <Skeleton key={card} className="h-24" />
-          ))}
-        </div>
-      </div>
+// Utility to calculate section counts
+const calculateSectionCounts = (totalStudents: number) => {
+  const sections = ['A', 'B', 'C', 'D']
+  const baseCount = Math.floor(totalStudents / 4)
+  const remainder = totalStudents % 4
+
+  const counts: Record<string, number> = sections.reduce((acc: Record<string, number>, section) => {
+    acc[section] = baseCount
+    return acc
+  }, {})
+
+  // Distribute the remainder
+  for (let i = 0; i < remainder; i++) {
+    counts[sections[i]] += 1
+  }
+
+  return counts
+}
+
+// Mock helper for year extraction
+const getYearFromRollNo = (rollno: string): string => {
+  // Example logic for extracting year based on roll number
+  const yearCode = rollno.slice(0, 2) // Adjust as per roll number structure
+  const yearMapping: Record<string, string> = {
+    '22': 'Final Year (2022 - 2026)',
+    '23': 'Third Year (2023 - 2027)',
+    '24': 'Second Year (2024 - 2028)',
+    '25': 'First Year (2025 - 2029)',
+  }
+  return yearMapping[yearCode] || 'Unknown Year'
+}
+
+// Skeleton for loading state
+const LoadingSkeleton = () => (
+  <div className="space-y-4">
+    {Array.from({ length: 4 }).map((_, index) => (
+      <div key={index} className="w-full h-24 bg-gray-200 rounded-md animate-pulse"></div>
     ))}
   </div>
 )
 
-const ErrorMessage: React.FC = () => (
-  <div className="flex items-center justify-center h-screen">
-    <Card className="w-96">
-      <CardHeader>
-        <CardTitle className="text-red-600">Error</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>There was an error loading the data. Please try again later.</p>
-      </CardContent>
-    </Card>
-  </div>
+// Error message
+const ErrorMessage = () => (
+  <div className="text-red-500 text-center">Failed to load data</div>
 )
 
 export default DepartmentGrid

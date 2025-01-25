@@ -25,13 +25,13 @@ const resolveTenantConnection = require('../middleware/resolveTenantConnection')
  *             properties:
  *               name:
  *                 type: string
- *                 example: "John Doe"
+ *                 example: "Praveen Kumar"
  *               email:
  *                 type: string
- *                 example: "johndoe@example.com"
+ *                 example: "praveenkumar@gmail.com"
  *               password:
  *                 type: string
- *                 example: "password123"
+ *                 example: "password"
  *               role:
  *                 type: string
  *                 example: "admin"

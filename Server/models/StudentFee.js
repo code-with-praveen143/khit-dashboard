@@ -18,7 +18,7 @@ const studentFeeSchema = new mongoose.Schema({
   gender: { type: String, enum: ['MALE', 'FEMALE', 'Other'], required: true }, // Gender of the student
   rollno:{type: String},
   course: { type: String, required: true }, // E.g., "Bachelor of Technology", "Master of Business Administration"
-  Deparment: { type: String  }, // E.g., "Mechanical", "CSE"
+  Department: { type: String  }, // E.g., "Mechanical", "CSE"
   aadharNumber: { type: String,  }, // Unique ID for the student
   phoneNumber: { type: String,  }, // Student's contact number
   parentNumbers: {

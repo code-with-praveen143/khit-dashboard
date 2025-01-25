@@ -31,5 +31,6 @@ export interface ParentNumbers {
     specialFees: Array<{ type: string; amount: number }> | []; // Example: Special fees array
     createdAt: string;
     updatedAt: string;
+    Department: string;
   }
   
