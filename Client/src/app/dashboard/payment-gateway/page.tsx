@@ -6,25 +6,32 @@ export default function EncryptURL() {
   const [plainURL, setPlainURL] = useState("");
   const [decryptedURL, setDecryptedParams] = useState("");
   const [loading, setLoading] = useState(false);
-  const [referenceNo, setReferenceNo] = useState("");
   const [transactionAmount, setTransactionAmount] = useState("");
   const [error, setError] = useState("");
 
+  // Generate a random reference number
+  const generateReferenceNo = () => {
+    return Math.floor(Math.random() * 1000000000); // Generates a random 9-digit number
+  };
+
   const generateEncryptedURL = async () => {
-    if (!referenceNo || !transactionAmount) {
-      setError("Both Reference Number and Transaction Amount are required.");
+    if (!transactionAmount) {
+      setError("Transaction Amount is required.");
       return;
     }
 
     setError(""); // Clear any existing error messages
     setLoading(true);
 
+    const referenceNo = generateReferenceNo(); // Random reference number
+    const mandatoryFields = `${referenceNo}|11|${transactionAmount}`; // Replace mandatory fields
+
     const requestBody = {
       merchantID: "386949",
-      mandatoryFields: "1234686|11|1",
+      mandatoryFields, // Use the dynamic mandatory fields
       optionalFields: "",
       returnURL: "https://khit.campusify.io/dashboard/return-url",
-      referenceNo,
+      referenceNo: referenceNo.toString(),
       subMerchantID: "11",
       transactionAmount,
       payMode: "9",
@@ -78,20 +85,6 @@ export default function EncryptURL() {
         {error && (
           <p className="text-red-500 text-sm mb-4">{error}</p>
         )}
-
-        <div className="mb-4">
-          <label htmlFor="referenceNo" className="block text-sm font-medium text-gray-700">
-            Reference Number
-          </label>
-          <input
-            type="text"
-            id="referenceNo"
-            value={referenceNo}
-            onChange={(e) => setReferenceNo(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Enter Reference Number"
-          />
-        </div>
 
         <div className="mb-4">
           <label htmlFor="transactionAmount" className="block text-sm font-medium text-gray-700">
